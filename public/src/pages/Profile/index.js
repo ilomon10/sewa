@@ -55,7 +55,7 @@ const Profile = () => {
                 <Text ml={1}>Buat layanan baru</Text>
               </Flex>
             </Button>
-            <CreateGigs isOpen={false} onDismiss={() => true } />
+            <CreateGigs isOpen={true} onDismiss={() => true } />
           </Flex>
           <Grid gridTemplateColumns="repeat(2, auto)">
             {[1, 2, 3, 4, 5].map((v) => (
