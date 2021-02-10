@@ -1,7 +1,7 @@
 import { Link as GoTo } from "react-router-dom";
 
 import { BorderBox, Box, Flex, Heading, Text, Link, ButtonOutline } from "@primer/components"
-import { BookmarkIcon } from "@primer/styled-octicons"
+import { ShareAndroidIcon } from "@primer/styled-octicons"
 
 const Item = () => {
   return (
@@ -29,7 +29,7 @@ const Item = () => {
         <Box flexGrow={1} />
         <Box px={2}>
           <ButtonOutline variant="small" title="Simpan dlu">
-            <BookmarkIcon />
+            <ShareAndroidIcon />
           </ButtonOutline>
         </Box>
       </Flex>

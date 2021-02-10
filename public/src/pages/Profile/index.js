@@ -1,5 +1,7 @@
-import { Avatar, Box, Heading, Flex, Text, Link, Grid } from "@primer/components"
+import { Avatar, Box, Heading, Flex, Text, Link, Grid, Button } from "@primer/components"
+import { PlusIcon } from "@primer/styled-octicons";
 import Item from "../../components/Item"
+import CreateGigs from "./CreateGigs";
 
 
 const Profile = () => {
@@ -9,7 +11,7 @@ const Profile = () => {
       maxWidth={750}
       mx="auto"
     >
-      <Flex>
+      <Flex px={2}>
         <Box width="35%" mb={4} mr={3}>
           <Box px={2} mb={4}>
             <Box mb={3}>
@@ -32,11 +34,11 @@ const Profile = () => {
             </Box>
           </Box>
           <Box px={2} my={4}>
-            <Heading as="h3" fontSize={3}>Deskripsi</Heading>
+            <Heading as="h3" fontSize={2}>Deskripsi</Heading>
             <Text as="p" fontSize={1} textAlign="justify">My name Is Ani and I am professional social media manager and content creator with 5 years+ of experience. I work along with a young and energetic team of experts giving end to end social media management and graphic design. We can develop effective social media strategies to drive brand engagement and awareness in the long run for your business. The platforms included are Facebook, Instagram, Twitter, Pinterest and LinkedIn. I am open to work on any gig plus new offers. Let’s make it happen!</Text>
           </Box>
           <Box px={2} my={4}>
-            <Heading as="h3" fontSize={3}>Akun Sosial</Heading>
+            <Heading as="h3" fontSize={2}>Akun Sosial</Heading>
             <Box my={2}><Link muted>Google</Link></Box>
             <Box my={2}><Link muted>Facebook</Link></Box>
             <Box my={2}><Link muted>Instagram</Link></Box>
@@ -44,6 +46,17 @@ const Profile = () => {
           </Box>
         </Box>
         <Box width="65%">
+          <Flex alignItems="center" mb={4} px={2}>
+            <Heading as="h3" fontSize={2} >Layanan ilomon10</Heading>
+            <Box flexGrow={1}></Box>
+            <Button variant="small">
+              <Flex alignItems="center">
+                <PlusIcon size={12} />
+                <Text ml={1}>Buat layanan baru</Text>
+              </Flex>
+            </Button>
+            <CreateGigs isOpen={false} onDismiss={() => true } />
+          </Flex>
           <Grid gridTemplateColumns="repeat(2, auto)">
             {[1, 2, 3, 4, 5].map((v) => (
               <Box key={v} mb={3} px={2}>

@@ -7,9 +7,17 @@ const Join = () => {
       <Heading>Gabung</Heading>
       <FormGroup>
         <FormGroup.Label htmlFor="login.email">Email</FormGroup.Label>
-        <TextInput id="login.email" name="email" variant="small" />
+        <TextInput
+          aria-label="email"
+          id="login.email"
+          name="email"
+          variant="small"
+          sx={{
+            display: "flex"
+          }}
+        />
       </FormGroup>
-      <ButtonPrimary>Gabung</ButtonPrimary>
+      <ButtonPrimary width="100%">Gabung</ButtonPrimary>
       <Box
         mt={3}
         pt={3}

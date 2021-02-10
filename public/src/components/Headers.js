@@ -1,6 +1,7 @@
 import { Link as GoTo, useHistory } from "react-router-dom";
-import { Box, Flex, Heading, Link, TextInput } from "@primer/components"
-import { SearchIcon } from "@primer/styled-octicons";
+import { Avatar, Box, Button, CounterLabel, Dropdown, Flex, Heading, Link, SelectMenu, Text, TextInput, Truncate } from "@primer/components"
+import { BellIcon, SearchIcon } from "@primer/styled-octicons";
+import { Divider as DropdownDivider } from "./Dropdown.Divider";
 
 const Header = () => {
   const history = useHistory();
@@ -34,7 +35,7 @@ const Header = () => {
               placeholder="Cari"
               variant="small"
               onKeyDown={(e) => {
-                if(e.key !== "Enter") return;
+                if (e.key !== "Enter") return;
                 history.push({
                   pathname: "/search/gigs",
                   search: `query=${e.target.value}&source=top_bar`
@@ -45,10 +46,56 @@ const Header = () => {
           </Box>
           <Box flexGrow={1} />
           <Box px={2}>
-            <Link as={GoTo} to="/join" fontWeight="bold" >Jadi Penjual</Link>
-            <Link as={GoTo} to="/login" ml={4}>Masuk</Link>
-            <Link as={GoTo} to="/join" ml={4}>Gabung</Link>
+            <Link muted as={GoTo} to="/join" fontWeight="bold" >Jadi Penjual</Link>
+            <Link muted as={GoTo} to="/login" ml={4}>Masuk</Link>
+            <Link muted as={GoTo} to="/join" ml={4}>Gabung</Link>
           </Box>
+          <Box px={2}>
+            <SelectMenu>
+              <Flex as="summary" alignItems="center">
+                <BellIcon />
+              </Flex>
+              <SelectMenu.Modal align="right">
+                <SelectMenu.Header>Notifikasi</SelectMenu.Header>
+                <SelectMenu.List>
+                  <SelectMenu.Item as="button">
+                    <Flex width="100%">
+                      <Text>Andra</Text>
+                      <Box ml={2} flexGrow={1}><Truncate color="gray.4" title="Gmn mo jadi pesan ato nda?">Gmn mo jadi pesan ato nda?</Truncate></Box>
+                      <CounterLabel>12</CounterLabel>
+                    </Flex>
+                  </SelectMenu.Item>
+                  <SelectMenu.Item>Bijon</SelectMenu.Item>
+                  <SelectMenu.Item>Bijon</SelectMenu.Item>
+                  <SelectMenu.Item>Bijon</SelectMenu.Item>
+                  <SelectMenu.Item>Bijon</SelectMenu.Item>
+                </SelectMenu.List>
+                <SelectMenu.Footer>Showing 3 of 3</SelectMenu.Footer>
+              </SelectMenu.Modal>
+            </SelectMenu>
+          </Box>
+          <Flex px={2} alignItems="center">
+            <Dropdown>
+              <Flex as="summary" alignItems="center">
+                <Avatar size={20} src="https://avatars.githubusercontent.com/primer" />
+                <Dropdown.Caret ml={1} />
+              </Flex>
+              <Dropdown.Menu
+                sx={{
+                  "&:before": {
+                    pointerEvents: "none"
+                  },
+                  "&:after": {
+                    pointerEvents: "none"
+                  }
+                }}
+              >
+                <Dropdown.Item as={GoTo} to="/ilomon10">Profile</Dropdown.Item>
+                <DropdownDivider />
+                <Dropdown.Item>Sign out</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Flex>
         </Flex>
       </Box>
       <Box
