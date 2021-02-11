@@ -2,9 +2,25 @@ import { Link as GoTo, useHistory } from "react-router-dom";
 import { Avatar, Box, Button, CounterLabel, Dropdown, Flex, Heading, Link, SelectMenu, Text, TextInput, Truncate } from "@primer/components"
 import { BellIcon, SearchIcon } from "@primer/styled-octicons";
 import { Divider as DropdownDivider } from "./Dropdown.Divider";
+import { useContext, useEffect, useState } from "react";
+import { FeathersContext } from "./feathers";
 
 const Header = () => {
   const history = useHistory();
+  const feathers = useContext(FeathersContext);
+  const [isLogged, setIsLogged] = useState(false);
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const user = await feathers.doReAuthenticate();
+        setIsLogged(true);
+      } catch (e) {
+        setIsLogged(false);
+        console.error(e);
+      }
+    }
+    fetch();
+  }, []);
   return (
     <Box>
       <Box
@@ -45,57 +61,66 @@ const Header = () => {
             />
           </Box>
           <Box flexGrow={1} />
-          <Box px={2}>
-            <Link muted as={GoTo} to="/join" fontWeight="bold" >Jadi Penjual</Link>
-            <Link muted as={GoTo} to="/login" ml={4}>Masuk</Link>
-            <Link muted as={GoTo} to="/join" ml={4}>Gabung</Link>
-          </Box>
-          <Box px={2}>
-            <SelectMenu>
-              <Flex as="summary" alignItems="center">
-                <BellIcon />
+          {!isLogged &&
+            <Box px={2}>
+              <Link muted as={GoTo} to="/join" fontWeight="bold" >Jadi Penjual</Link>
+              <Link muted as={GoTo} to="/login" ml={4}>Masuk</Link>
+              <Link muted as={GoTo} to="/join" ml={4}>Gabung</Link>
+            </Box>
+          }
+          {isLogged &&
+            <>
+              <Box px={2}>
+                <SelectMenu>
+                  <Flex as="summary" alignItems="center">
+                    <BellIcon />
+                  </Flex>
+                  <SelectMenu.Modal align="right">
+                    <SelectMenu.Header>Notifikasi</SelectMenu.Header>
+                    <SelectMenu.List>
+                      <SelectMenu.Item as="button">
+                        <Flex width="100%">
+                          <Text>Andra</Text>
+                          <Box ml={2} flexGrow={1}><Truncate color="gray.4" title="Gmn mo jadi pesan ato nda?">Gmn mo jadi pesan ato nda?</Truncate></Box>
+                          <CounterLabel>12</CounterLabel>
+                        </Flex>
+                      </SelectMenu.Item>
+                      <SelectMenu.Item>Bijon</SelectMenu.Item>
+                      <SelectMenu.Item>Bijon</SelectMenu.Item>
+                      <SelectMenu.Item>Bijon</SelectMenu.Item>
+                      <SelectMenu.Item>Bijon</SelectMenu.Item>
+                    </SelectMenu.List>
+                    <SelectMenu.Footer>Showing 3 of 3</SelectMenu.Footer>
+                  </SelectMenu.Modal>
+                </SelectMenu>
+              </Box>
+              <Flex px={2} alignItems="center">
+                <Dropdown>
+                  <Flex as="summary" alignItems="center">
+                    <Avatar size={20} src="https://avatars.githubusercontent.com/primer" />
+                    <Dropdown.Caret ml={1} />
+                  </Flex>
+                  <Dropdown.Menu
+                    sx={{
+                      "&:before": {
+                        pointerEvents: "none"
+                      },
+                      "&:after": {
+                        pointerEvents: "none"
+                      }
+                    }}
+                  >
+                    <Dropdown.Item as={GoTo} to="/ilomon10">Profile</Dropdown.Item>
+                    <DropdownDivider />
+                    <Dropdown.Item onClick={() => {
+                      feathers.doLogout();
+                      history.go(0);
+                    }}
+                    >Sign out</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </Flex>
-              <SelectMenu.Modal align="right">
-                <SelectMenu.Header>Notifikasi</SelectMenu.Header>
-                <SelectMenu.List>
-                  <SelectMenu.Item as="button">
-                    <Flex width="100%">
-                      <Text>Andra</Text>
-                      <Box ml={2} flexGrow={1}><Truncate color="gray.4" title="Gmn mo jadi pesan ato nda?">Gmn mo jadi pesan ato nda?</Truncate></Box>
-                      <CounterLabel>12</CounterLabel>
-                    </Flex>
-                  </SelectMenu.Item>
-                  <SelectMenu.Item>Bijon</SelectMenu.Item>
-                  <SelectMenu.Item>Bijon</SelectMenu.Item>
-                  <SelectMenu.Item>Bijon</SelectMenu.Item>
-                  <SelectMenu.Item>Bijon</SelectMenu.Item>
-                </SelectMenu.List>
-                <SelectMenu.Footer>Showing 3 of 3</SelectMenu.Footer>
-              </SelectMenu.Modal>
-            </SelectMenu>
-          </Box>
-          <Flex px={2} alignItems="center">
-            <Dropdown>
-              <Flex as="summary" alignItems="center">
-                <Avatar size={20} src="https://avatars.githubusercontent.com/primer" />
-                <Dropdown.Caret ml={1} />
-              </Flex>
-              <Dropdown.Menu
-                sx={{
-                  "&:before": {
-                    pointerEvents: "none"
-                  },
-                  "&:after": {
-                    pointerEvents: "none"
-                  }
-                }}
-              >
-                <Dropdown.Item as={GoTo} to="/ilomon10">Profile</Dropdown.Item>
-                <DropdownDivider />
-                <Dropdown.Item>Sign out</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Flex>
+            </>}
         </Flex>
       </Box>
       <Box

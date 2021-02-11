@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { FeathersProvider } from "./components/feathers";
 import Footer from "./components/Footer";
 import Header from "./components/Headers";
 import Gigs from "./pages/Gigs";
@@ -12,17 +13,19 @@ import Search from "./pages/Search";
 function App() {
   return (
     <Router>
-      <Header />
-      <Switch>
-        <Route path="/join" component={Join} />
-        <Route path="/login" component={Login} />
-        <Route path="/search/gigs" component={Search} />
-        <Route path="/lists" component={Lists} />
-        <Route path="/:profile" exact component={Profile} />
-        <Route path="/:profile/:gig" component={Gigs} />
-        <Route path="/" component={Landing} />
-      </Switch>
-      <Footer />
+      <FeathersProvider>
+        <Header />
+        <Switch>
+          <Route path="/join" component={Join} />
+          <Route path="/login" component={Login} />
+          <Route path="/search/gigs" component={Search} />
+          <Route path="/lists" component={Lists} />
+          <Route path="/:profile" exact component={Profile} />
+          <Route path="/:profile/:gig" component={Gigs} />
+          <Route path="/" component={Landing} />
+        </Switch>
+        <Footer />
+      </FeathersProvider>
     </Router>
   );
 }
