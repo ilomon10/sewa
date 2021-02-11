@@ -10,11 +10,13 @@ import CreateGigs from "./CreateGigs";
 const Profile = () => {
   const params = useParams();
   const feathers = useContext(FeathersContext);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [user, setUser] = useState({
     name: "",
     location: "",
     profile: null,
   });
+  const [gigs, setGigs] = useState([]);
   useEffect(() => {
     const fetch = async () => {
       let user = {};
@@ -35,17 +37,23 @@ const Profile = () => {
         return false;
       }
 
+      console.log(user);
       let gigs = [];
 
       try {
         gigs = await feathers.gigs.find({
           query: {
-            userId: user.id
+            userId: user.id,
+            $select: ["id", "slug", "title", "basic_price", "updatedAt"]
           }
         })
-        console.log(gigs);
+        gigs = gigs.data.map(gig => {
+          const url = `/${gig["user.username"]}/${gig.slug}`;
+          return { ...gig, url }
+        })
+        setGigs(gigs);
       } catch (e) {
-        console.error(gigs);
+        console.error(e);
       }
     }
     fetch();
@@ -94,18 +102,18 @@ const Profile = () => {
           <Flex alignItems="center" mb={4} px={2}>
             <Heading as="h3" fontSize={2} >Layanan {user.username}</Heading>
             <Box flexGrow={1}></Box>
-            <Button variant="small">
+            <Button variant="small" onClick={() => setIsDialogOpen(true)}>
               <Flex alignItems="center">
                 <PlusIcon size={12} />
                 <Text ml={1}>Buat layanan baru</Text>
               </Flex>
             </Button>
-            <CreateGigs isOpen={false} onDismiss={() => true} />
+            <CreateGigs isOpen={isDialogOpen} onDismiss={() => setIsDialogOpen(false)} />
           </Flex>
           <Grid gridTemplateColumns="repeat(2, auto)">
-            {[1, 2, 3, 4, 5].map((v) => (
-              <Box key={v} mb={3} px={2}>
-                <Item />
+            {gigs.map(({ id, title, basic_price, url }) => (
+              <Box key={id} mb={3} px={2}>
+                <Item title={title} price={basic_price} url={url} />
               </Box>
             ))}
           </Grid>

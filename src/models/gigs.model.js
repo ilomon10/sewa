@@ -6,12 +6,17 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const gigs = sequelizeClient.define('gigs', {
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false
     },
     details: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true
     },
     
@@ -78,13 +83,18 @@ module.exports = function (app) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
 
-    const { users, categories, tags } = models;
+    const { users, categories, tags, media } = models;
 
     gigs.belongsTo(users);
     gigs.belongsTo(categories);
     gigs.belongsToMany(tags, {
       through: "gigs_tags",
       as: "tags",
+      foreignKey: "gigs_id"
+    });
+    gigs.belongsToMany(media, {
+      through: "gigs_media",
+      as: "media",
       foreignKey: "gigs_id"
     });
   };

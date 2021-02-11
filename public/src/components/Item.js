@@ -3,7 +3,7 @@ import { Link as GoTo } from "react-router-dom";
 import { BorderBox, Box, Flex, Heading, Text, Link, ButtonOutline } from "@primer/components"
 import { ShareAndroidIcon } from "@primer/styled-octicons"
 
-const Item = () => {
+const Item = ({ title, price, url }) => {
   return (
     <BorderBox overflow="hidden">
       <Flex
@@ -17,14 +17,24 @@ const Item = () => {
           <img style={{ display: "block" }} alt={"Alt text"} src="https://via.placeholder.com/75" />
         </Box>
         <Box p={2}>
-          <Link as={GoTo} to={"/ilomon10/desain-banner-cepat"} muted>
-            <Heading as="h3" fontSize={1}>Kita bole desain banner cepat nda perlu lama</Heading>
+          <Link as={GoTo} to={url} muted>
+            <Heading
+              as="h3"
+              fontSize={1}
+              sx={{
+                display: "-webkit-box",
+                "-webkit-line-clamp": "3",
+                "-webkit-box-orient": "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis"
+              }}
+            >{title}</Heading>
           </Link>
         </Box>
       </Flex>
       <Flex alignItems="center" py={2}>
         <Box px={2}>
-          <Text fontSize={1}>Harga <Text fontWeight="bold">Rp.25.000</Text></Text>
+          <Text fontSize={1}>Harga <Text fontWeight="bold">Rp.{price}</Text></Text>
         </Box>
         <Box flexGrow={1} />
         <Box px={2}>

@@ -19,7 +19,7 @@ function App() {
           <Route path="/join" component={Join} />
           <Route path="/login" component={Login} />
           <Route path="/search/gigs" component={Search} />
-          <Route path="/lists" component={Lists} />
+          <Route path="/category/:category" component={Lists} />
           <Route path="/:profile" exact component={Profile} />
           <Route path="/:profile/:gig" component={Gigs} />
           <Route path="/" component={Landing} />

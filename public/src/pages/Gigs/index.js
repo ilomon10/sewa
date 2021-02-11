@@ -1,10 +1,72 @@
-import { Link as GoTo } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Link as GoTo, useParams } from "react-router-dom";
 import { Box, ButtonPrimary, Dropdown, Flex, Grid, Heading, Link, SubNav, Text } from "@primer/components";
 import { StopwatchIcon } from "@primer/styled-octicons";
 import AspectRatio from "../../components/AspectRatio";
 import Item from "../../components/Item";
+import { useState } from "react";
+import { FeathersContext } from "../../components/feathers";
 
 const Gigs = () => {
+  const params = useParams();
+  const feathers = useContext(FeathersContext);
+  const [plan, setPlan] = useState("basic");
+  const [user, setUser] = useState({
+    username: params.profile
+  });
+  const [gig, setGig] = useState({
+    slug: params.gig
+  })
+  const [gigs, setGigs] = useState([]);
+  useEffect(() => {
+    const fetch = async () => {
+      let user = {};
+      try {
+        user = await feathers.users.find({
+          query: { username: params.profile }
+        })
+        if (user.data.length < 1) return;
+        user = {
+          ...user.data[0]
+        }
+        setUser(() => user)
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+
+      let gig = {};
+
+      try {
+        gig = await feathers.gigs.find({
+          query: { slug: params.gig }
+        })
+        console.log(gig);
+        setGig(gig.data[0]);
+      } catch (e) {
+        console.error(e);
+      }
+
+      let gigs = [];
+
+      try {
+        gigs = await feathers.gigs.find({
+          query: {
+            userId: user.id,
+            $select: ["id", "slug", "title", "basic_price", "updatedAt"]
+          }
+        });
+        gigs = gigs.data.map(gig => {
+          const url = `/${gig["user.username"]}/${gig.slug}`;
+          return { ...gig, url }
+        });
+        setGigs(gigs);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetch();
+  }, [params]);
   return (
     <Box px={2} pt={4} maxWidth={750} mx="auto">
       <Flex mb={4}>
@@ -33,35 +95,67 @@ const Gigs = () => {
           </Flex>
         </Box>
         <Box px={2}>
-          <Heading fontSize={4} mb={2}>Kita bole desain banner cepat nda perlu lama</Heading>
+          <Heading fontSize={4} mb={2}>{gig.title}</Heading>
           <Text color="gray.5">
-            <Link as={GoTo} to="/ilomon10" fontWeight="bold">ilomon10</Link>
+            <Link as={GoTo} to={`/${params.profile}`} fontWeight="bold">{params.profile}</Link>
             <Text> level 2 | Antri 3 orderan</Text>
           </Text>
           <Box my={4}>
             <SubNav aria-label="Main">
               <SubNav.Links>
-                <SubNav.Link selected>Basic</SubNav.Link>
-                <SubNav.Link >Standard</SubNav.Link>
-                <SubNav.Link >Premium</SubNav.Link>
+                <SubNav.Link role="button" selected={plan === "basic"} onClick={() => setPlan("basic")}>Basic</SubNav.Link>
+                <SubNav.Link role="button" selected={plan === "standard"} onClick={() => setPlan("standard")}>Standard</SubNav.Link>
+                <SubNav.Link role="button" selected={plan === "premium"} onClick={() => setPlan("premium")}>Premium</SubNav.Link>
               </SubNav.Links>
             </SubNav>
-            <Flex my={4} alignItems="center">
-              <Text fontSize={2}>Paket <Text fontWeight="bold">Biasa</Text></Text>
-              <Box flexGrow={1}></Box>
-              <Text fontSize={3}>Rp. 20.000</Text>
-            </Flex>
-            <Text as="p" color="gray.5">✓Page creation ✓Buttons ✓Settings ✓Basic details ✓Profile and cover image applied</Text>
-            <Flex alignItems="center" color="gray.7" my={4}>
-              <StopwatchIcon />
-              <Text fontWeight="bold" ml={2}>Waktu 2 hari kerja</Text>
-            </Flex>
-            <ButtonPrimary width="100%" variant="large">Booking (Rp. 20.000)</ButtonPrimary>
+            {plan === "basic" &&
+              <>
+                <Flex my={4} alignItems="center">
+                  <Text fontSize={2}>Paket <Text fontWeight="bold">{gig["basic_title"]}</Text></Text>
+                  <Box flexGrow={1}></Box>
+                  <Text fontSize={3}>Rp. {gig["basic_price"]}</Text>
+                </Flex>
+                <Text as="p" color="gray.5">{gig["basic_description"]}</Text>
+                <Flex alignItems="center" color="gray.7" my={4}>
+                  <StopwatchIcon />
+                  <Text fontWeight="bold" ml={2}>Waktu {gig["basic_worktime"]} hari kerja</Text>
+                </Flex>
+              </>
+            }
+            {plan === "standard" &&
+              <>
+                <Flex my={4} alignItems="center">
+                  <Text fontSize={2}>Paket <Text fontWeight="bold">{gig["standard_title"]}</Text></Text>
+                  <Box flexGrow={1}></Box>
+                  <Text fontSize={3}>Rp. {gig["standard_price"]}</Text>
+                </Flex>
+                <Text as="p" color="gray.5">{gig["standard_description"]}</Text>
+                <Flex alignItems="center" color="gray.7" my={4}>
+                  <StopwatchIcon />
+                  <Text fontWeight="bold" ml={2}>Waktu {gig["standard_worktime"]} hari kerja</Text>
+                </Flex>
+              </>
+            }
+            {plan === "premium" &&
+              <>
+                <Flex my={4} alignItems="center">
+                  <Text fontSize={2}>Paket <Text fontWeight="bold">{gig["premium_title"]}</Text></Text>
+                  <Box flexGrow={1}></Box>
+                  <Text fontSize={3}>Rp. {gig["premium_price"]}</Text>
+                </Flex>
+                <Text as="p" color="gray.5">{gig["premium_description"]}</Text>
+                <Flex alignItems="center" color="gray.7" my={4}>
+                  <StopwatchIcon />
+                  <Text fontWeight="bold" ml={2}>Waktu {gig["premium_worktime"]} hari kerja</Text>
+                </Flex>
+              </>
+            }
+            <ButtonPrimary width="100%" variant="large">Booking</ButtonPrimary>
           </Box>
         </Box>
       </Flex>
-      <Flex px={2} mb={3}>
-        <Heading mb={4} fontSize={4}>Lainnya dari <Link as={GoTo} to="/ilomon10">ilomon10</Link></Heading>
+      <Flex px={2} mb={4} alignItems="center">
+        <Heading fontSize={4}>Lainnya dari <Link as={GoTo} to={`/${params.profile}`}>{params.profile}</Link></Heading>
         <Box flexGrow={1} />
         <Text>
           <Text>Urutan </Text>
@@ -80,12 +174,11 @@ const Gigs = () => {
         </Text>
       </Flex>
       <Grid mb={4} gridTemplateColumns="repeat(3, auto)">
-        {[1, 2, 3, 4, 5].map((v) => (
-          <Box key={v} mb={3} px={2}>
-            <Item />
+        {gigs.map(({ id, title, basic_price, url }) => (
+          <Box key={id} mb={3} px={2}>
+            <Item title={title} price={basic_price} url={url} />
           </Box>
-        ))
-        }
+        ))}
       </Grid>
     </Box>
   )
