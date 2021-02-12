@@ -21,6 +21,8 @@ class Feathers {
     this.client.configure(feathersAuth({
       storageKey: "accessToken"
     }))
+
+    this.account = null;
   }
 
   doAuthenticate(authentication, params) {
@@ -29,8 +31,10 @@ class Feathers {
   doLogout() {
     return this.client.logout();
   }
-  doReAuthenticate(force) {
-    return this.client.reAuthenticate(force);
+  async doReAuthenticate(force) {
+    const account = await this.client.reAuthenticate(force);
+    this.account = account.user;
+    return account;
   }
   doGet(name) {
     return this.client.get(name);

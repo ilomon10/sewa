@@ -4,14 +4,16 @@ const {
   hashPassword, protect
 } = require('@feathersjs/authentication-local').hooks;
 
+const sequelizeInclude = require('../../hooks/sequelize-include');
+
 module.exports = {
   before: {
     all: [],
-    find: [ ],
+    find: [sequelizeInclude()],
     get: [ authenticate('jwt') ],
-    create: [ hashPassword('password') ],
+    create: [hashPassword('password'), sequelizeInclude()],
     update: [ hashPassword('password'),  authenticate('jwt') ],
-    patch: [ hashPassword('password'),  authenticate('jwt') ],
+    patch: [hashPassword('password'), authenticate('jwt'), sequelizeInclude()],
     remove: [ authenticate('jwt') ]
   },
 

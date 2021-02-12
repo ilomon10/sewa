@@ -1,15 +1,13 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
 
-const sequelizeInclude = require('../../hooks/sequelize-include');
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
-    find: [sequelizeInclude()],
+    all: [],
+    find: [],
     get: [],
-    create: [sequelizeInclude()],
+    create: [],
     update: [],
-    patch: [sequelizeInclude()],
+    patch: [],
     remove: []
   },
 

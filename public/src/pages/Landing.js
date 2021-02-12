@@ -1,7 +1,7 @@
-import { BorderBox, Box, ButtonOutline, Flex, Grid, Heading, Link, Text } from "@primer/components";
+import { BorderBox, Box, ButtonOutline, Flex, Heading, Link, Text } from "@primer/components";
 import AspectRatio from "../components/AspectRatio";
 import Slider from "react-slick";
-import Item from "../components/Item";
+import Lists from "./Lists";
 
 const Landing = () => {
   const settings = {
@@ -76,6 +76,11 @@ const Landing = () => {
                     "--image-url": "url(https://via.placeholder.com/750x230)"
                   }}></a>
                 </div>
+                <div>
+                  <a className="recommendation-carousel" style={{
+                    "--image-url": "url(http://localhost:3030/uploads/1613040095107-IMG_5096.jpg)"
+                  }}></a>
+                </div>
               </Slider>
             </Box>
           </Box>
@@ -83,23 +88,17 @@ const Landing = () => {
       </Flex>
       <Box px={2} my={4}>
         <Heading mb={4} fontSize={4}>Terpopuler di <Link>Transportasi</Link></Heading>
-        <Grid mx={-2} gridTemplateColumns="repeat(3, auto)">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((v) => (
-            <Box key={v} mb={3} px={2}>
-              <Item />
-            </Box>
-          ))}
-        </Grid>
+        <Lists query={{
+          categoryId: 1,
+          $limit: 9
+        }} />
       </Box>
       <Box px={2} my={4}>
         <Heading mb={4} fontSize={4}>Pilihan editor</Heading>
-        <Grid mx={-2} gridTemplateColumns="repeat(3, auto)">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((v) => (
-            <Box key={v} mb={3} px={2}>
-              <Item />
-            </Box>
-          ))}
-        </Grid>
+        <Lists query={{
+          userId: 1,
+          $limit: 12
+        }} />
       </Box>
     </Box>
   )

@@ -6,6 +6,7 @@ import AspectRatio from "../../components/AspectRatio";
 import Item from "../../components/Item";
 import { useState } from "react";
 import { FeathersContext } from "../../components/feathers";
+import Lists from "../Lists";
 
 const Gigs = () => {
   const params = useParams();
@@ -17,7 +18,6 @@ const Gigs = () => {
   const [gig, setGig] = useState({
     slug: params.gig
   })
-  const [gigs, setGigs] = useState([]);
   useEffect(() => {
     const fetch = async () => {
       let user = {};
@@ -43,24 +43,6 @@ const Gigs = () => {
         })
         console.log(gig);
         setGig(gig.data[0]);
-      } catch (e) {
-        console.error(e);
-      }
-
-      let gigs = [];
-
-      try {
-        gigs = await feathers.gigs.find({
-          query: {
-            userId: user.id,
-            $select: ["id", "slug", "title", "basic_price", "updatedAt"]
-          }
-        });
-        gigs = gigs.data.map(gig => {
-          const url = `/${gig["user.username"]}/${gig.slug}`;
-          return { ...gig, url }
-        });
-        setGigs(gigs);
       } catch (e) {
         console.error(e);
       }
@@ -173,13 +155,9 @@ const Gigs = () => {
           </Dropdown>
         </Text>
       </Flex>
-      <Grid mb={4} gridTemplateColumns="repeat(3, auto)">
-        {gigs.map(({ id, title, basic_price, url }) => (
-          <Box key={id} mb={3} px={2}>
-            <Item title={title} price={basic_price} url={url} />
-          </Box>
-        ))}
-      </Grid>
+      <Lists query={{
+        userId: user.id
+      }} />
     </Box>
   )
 }

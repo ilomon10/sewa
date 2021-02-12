@@ -6,7 +6,15 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const media = sequelizeClient.define('media', {
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
     filename: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    path: {
       type: DataTypes.STRING,
       allowNull: false
     }
@@ -22,7 +30,7 @@ module.exports = function (app) {
   media.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    const { users } = models;
+    const { users, gigs } = models;
 
     media.belongsTo(users);
     media.belongsToMany(gigs, {

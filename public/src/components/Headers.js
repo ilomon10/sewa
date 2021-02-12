@@ -9,14 +9,16 @@ import { FeathersContext } from "./feathers";
 const Header = () => {
   const history = useHistory();
   const feathers = useContext(FeathersContext);
-  const [isLogged, setIsLogged] = useState(false);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    setLoading(true);
     const fetch = async () => {
       try {
         await feathers.doReAuthenticate();
-        setIsLogged(true);
+        setLoading(false);
       } catch (e) {
-        setIsLogged(false);
+        setLoading(false);
+        return;
       }
     }
     fetch();
@@ -61,14 +63,15 @@ const Header = () => {
             />
           </Box>
           <Box flexGrow={1} />
-          {!isLogged &&
+          {loading && <Box>Loading</Box>}
+          {!(feathers.account !== null) &&
             <Box px={2}>
               <Link muted as={GoTo} to="/join" fontWeight="bold" >Jadi Penjual</Link>
               <Link muted as={GoTo} to="/login" ml={4}>Masuk</Link>
               <Link muted as={GoTo} to="/join" ml={4}>Gabung</Link>
             </Box>
           }
-          {isLogged &&
+          {(feathers.account !== null) &&
             <>
               <Box px={2}>
                 <SelectMenu>

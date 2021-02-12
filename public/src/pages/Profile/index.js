@@ -44,11 +44,15 @@ const Profile = () => {
         gigs = await feathers.gigs.find({
           query: {
             userId: user.id,
-            $select: ["id", "slug", "title", "basic_price", "updatedAt"]
+            $select: ["id", "slug", "title", "basic_price", "updatedAt"],
+            $include: {
+              model: "users",
+              attributes: ["id", "username"]
+            }
           }
         })
         gigs = gigs.data.map(gig => {
-          const url = `/${gig["user.username"]}/${gig.slug}`;
+          const url = `/${gig["user"]["username"]}/${gig.slug}`;
           return { ...gig, url }
         })
         setGigs(gigs);
@@ -102,13 +106,16 @@ const Profile = () => {
           <Flex alignItems="center" mb={4} px={2}>
             <Heading as="h3" fontSize={2} >Layanan {user.username}</Heading>
             <Box flexGrow={1}></Box>
-            <Button variant="small" onClick={() => setIsDialogOpen(true)}>
-              <Flex alignItems="center">
-                <PlusIcon size={12} />
-                <Text ml={1}>Buat layanan baru</Text>
-              </Flex>
-            </Button>
-            <CreateGigs isOpen={isDialogOpen} onDismiss={() => setIsDialogOpen(false)} />
+            {(feathers.account && feathers.account.username === user.username) &&
+              <>
+                <Button variant="small" onClick={() => setIsDialogOpen(true)}>
+                  <Flex alignItems="center">
+                    <PlusIcon size={12} />
+                    <Text ml={1}>Buat layanan baru</Text>
+                  </Flex>
+                </Button>
+                <CreateGigs isOpen={isDialogOpen} onDismiss={() => setIsDialogOpen(false)} />
+              </>}
           </Flex>
           <Grid gridTemplateColumns="repeat(2, auto)">
             {gigs.map(({ id, title, basic_price, url }) => (

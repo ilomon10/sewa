@@ -1,7 +1,7 @@
 const { Service } = require('feathers-sequelize');
 const logger = require('../../logger');
 
-exports.Tags = class Tags extends Service {
+exports.GigsTags = class GigsTags extends Service {
   async create(data, params) {
     if (Array.isArray(data)) {
       try {
@@ -11,5 +11,9 @@ exports.Tags = class Tags extends Service {
       }
     }
     return super.create(data, params);
+  }
+  async remove(id, params) {
+    logger.info("gigstags:remove", id);
+    return super.remove(id, params);
   }
 };
