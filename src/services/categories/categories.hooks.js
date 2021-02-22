@@ -4,13 +4,13 @@ const sequelizeInclude = require('../../hooks/sequelize-include');
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [],
     find: [sequelizeInclude()],
     get: [],
-    create: [sequelizeInclude()],
-    update: [],
-    patch: [sequelizeInclude()],
-    remove: []
+    create: [authenticate('jwt'), sequelizeInclude()],
+    update: [authenticate('jwt')],
+    patch: [authenticate('jwt'), sequelizeInclude()],
+    remove: [authenticate('jwt')]
   },
 
   after: {

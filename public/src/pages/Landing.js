@@ -3,6 +3,36 @@ import AspectRatio from "../components/AspectRatio";
 import Slider from "react-slick";
 import Lists from "./Lists";
 
+import recommendImage1 from "../assets/recommendation_1.png";
+import recommendImage2 from "../assets/recommendation_2.png";
+import recommendImage3 from "../assets/recommendation_3.png";
+
+const Carousel = ({ image, title, subtitle }) => {
+  return (
+    <div>
+      <a className="recommendation-carousel" style={{
+        position: "relative",
+        "--image-url": `url(${image})`
+      }}>
+        <Box sx={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          py: 4,
+          px: 3,
+          color: "white",
+          textShadow: "0px 1px black"
+        }}>
+          <Text m={0} mb={1} as="h2">{title}</Text>
+          <Text m={0} as="p">{subtitle}</Text>
+        </Box>
+      </a>
+    </div>
+  )
+}
+
 const Landing = () => {
   const settings = {
     arrows: false,
@@ -50,6 +80,7 @@ const Landing = () => {
                   left: 3,
                   bottom: 3,
                   "li": {
+                    margin: 0,
                     "button:before": {
                       color: "white",
                       fontSize: "10px"
@@ -61,26 +92,26 @@ const Landing = () => {
                   height: 175,
                   backgroundSize: "cover",
                   backgroundPosition: "100% 100%",
-                  backgroundImage: "linear-gradient(90deg,rgba(34,35,37,.8),rgba(34,35,37,0)),var(--image-url)",
+                  backgroundImage: "linear-gradient(90deg,rgba(34,35,37,.8),rgba(34,35,37,.25)),var(--image-url)",
                 }
               }}
             >
               <Slider {...settings}>
-                <div>
-                  <a className="recommendation-carousel" style={{
-                    "--image-url": "url(https://via.placeholder.com/750x230)"
-                  }}></a>
-                </div>
-                <div>
-                  <a className="recommendation-carousel" style={{
-                    "--image-url": "url(https://via.placeholder.com/750x230)"
-                  }}></a>
-                </div>
-                <div>
-                  <a className="recommendation-carousel" style={{
-                    "--image-url": "url(http://localhost:3030/uploads/1613040095107-IMG_5096.jpg)"
-                  }}></a>
-                </div>
+                <Carousel
+                  title={"Daftarkan jasa Anda sekarang"}
+                  subtitle={"Hadirkan layanan anda secara online."}
+                  image={recommendImage2}
+                />
+                <Carousel
+                  title={"Booking mobil langsung disini"}
+                  subtitle={"Cari rental mobil yang sesuai."}
+                  image={recommendImage3}
+                />
+                <Carousel
+                  title={"Pekerja profesional"}
+                  subtitle={"Sewa pekerja lepas yang memiliki dasar yang cukup."}
+                  image={recommendImage1}
+                />
               </Slider>
             </Box>
           </Box>

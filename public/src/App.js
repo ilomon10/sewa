@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { FeathersProvider } from "./components/feathers";
 import Footer from "./components/Footer";
 import Header from "./components/Headers";
+import Category from "./pages/Category";
 import Gigs from "./pages/Gigs";
 import Join from "./pages/Join";
 import Landing from "./pages/Landing";
@@ -19,7 +20,7 @@ function App() {
           <Route path="/join" component={Join} />
           <Route path="/login" component={Login} />
           <Route path="/search/gigs" component={Search} />
-          <Route path="/category/:category" component={Lists} />
+          <Route path="/category/:category" component={Category} />
           <Route path="/:profile" exact component={Profile} />
           <Route path="/:profile/:gig" component={Gigs} />
           <Route path="/" component={Landing} />

@@ -2,8 +2,15 @@ import { Link as GoTo } from "react-router-dom";
 
 import { BorderBox, Box, Flex, Heading, Text, Link, ButtonOutline } from "@primer/components"
 import { ShareAndroidIcon } from "@primer/styled-octicons"
+import { formatMoney } from "./helper";
 
-const Item = ({ title, price, url }) => {
+const Item = ({
+  title = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  price = 10000,
+  url,
+  image,
+  loading = false
+}) => {
   return (
     <BorderBox overflow="hidden">
       <Flex
@@ -14,9 +21,9 @@ const Item = ({ title, price, url }) => {
         }}
       >
         <Box height={75} width={75} flexShrink={0} backgroundColor="gray.2">
-          <img style={{ display: "block" }} alt={"Alt text"} src="https://via.placeholder.com/75" />
+          {!loading && <img style={{ display: "block" }} alt={"Alt text"} src={image} />}
         </Box>
-        <Box p={2}>
+        <Flex px={2} alignItems="center">
           <Link as={GoTo} to={url} muted>
             <Heading
               as="h3"
@@ -28,17 +35,19 @@ const Item = ({ title, price, url }) => {
                 overflow: "hidden",
                 textOverflow: "ellipsis"
               }}
-            >{title}</Heading>
+            >
+              <span className={loading ? "placeholder-content" : ""} style={{ lineHeight: loading ? "20px" : "inherit" }}>{title}</span>
+            </Heading>
           </Link>
-        </Box>
+        </Flex>
       </Flex>
       <Flex alignItems="center" py={2}>
         <Box px={2}>
-          <Text fontSize={1}>Harga <Text fontWeight="bold">Rp.{price}</Text></Text>
+          <Text fontSize={1} className={loading ? "placeholder-content" : ""}>Harga <Text fontWeight="bold">Rp.{formatMoney(price)}</Text></Text>
         </Box>
         <Box flexGrow={1} />
         <Box px={2}>
-          <ButtonOutline variant="small" title="Simpan dlu">
+          <ButtonOutline variant="small" title="Simpan dlu" className={loading ? "placeholder-content" : ""}>
             <ShareAndroidIcon />
           </ButtonOutline>
         </Box>

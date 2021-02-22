@@ -1,22 +1,27 @@
-import { useContext, useEffect } from "react";
-import { Link as GoTo, useParams } from "react-router-dom";
-import { Box, ButtonPrimary, Dropdown, Flex, Grid, Heading, Link, SubNav, Text } from "@primer/components";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { Link as GoTo, useHistory, useLocation, useParams } from "react-router-dom";
+import { Box, ButtonPrimary, Dropdown, Flex, Heading, Link, SubNav, Text } from "@primer/components";
 import { StopwatchIcon } from "@primer/styled-octicons";
 import AspectRatio from "../../components/AspectRatio";
-import Item from "../../components/Item";
-import { useState } from "react";
 import { FeathersContext } from "../../components/feathers";
+import { formatMoney } from "../../components/helper";
 import Lists from "../Lists";
 
 const Gigs = () => {
   const params = useParams();
+  const history = useHistory();
+  const location = useLocation();
   const feathers = useContext(FeathersContext);
-  const [plan, setPlan] = useState("basic");
+  const plan = useMemo(() => {
+    const search = new URLSearchParams(location.search);
+    return search.get("plan") || "basic";
+  }, [location.search]);
   const [user, setUser] = useState({
     username: params.profile
   });
   const [gig, setGig] = useState({
-    slug: params.gig
+    slug: params.gig,
+    category: {}
   })
   useEffect(() => {
     const fetch = async () => {
@@ -39,7 +44,13 @@ const Gigs = () => {
 
       try {
         gig = await feathers.gigs.find({
-          query: { slug: params.gig }
+          query: {
+            slug: params.gig,
+            $include: {
+              model: "categories",
+              attributes: ["id", "title"]
+            }
+          },
         })
         console.log(gig);
         setGig(gig.data[0]);
@@ -48,7 +59,7 @@ const Gigs = () => {
       }
     }
     fetch();
-  }, [params]);
+  }, [params.gig]);
   return (
     <Box px={2} pt={4} maxWidth={750} mx="auto">
       <Flex mb={4}>
@@ -80,14 +91,27 @@ const Gigs = () => {
           <Heading fontSize={4} mb={2}>{gig.title}</Heading>
           <Text color="gray.5">
             <Link as={GoTo} to={`/${params.profile}`} fontWeight="bold">{params.profile}</Link>
-            <Text> level 2 | Antri 3 orderan</Text>
+            <Text> level 2 | </Text>
+            <Link as={GoTo} to={`/category/${gig.category.title}`}>{gig.category.title}</Link>
           </Text>
           <Box my={4}>
             <SubNav aria-label="Main">
               <SubNav.Links>
-                <SubNav.Link role="button" selected={plan === "basic"} onClick={() => setPlan("basic")}>Basic</SubNav.Link>
-                <SubNav.Link role="button" selected={plan === "standard"} onClick={() => setPlan("standard")}>Standard</SubNav.Link>
-                <SubNav.Link role="button" selected={plan === "premium"} onClick={() => setPlan("premium")}>Premium</SubNav.Link>
+                <SubNav.Link
+                  onClick={() => { history.push(`/${params.profile}/${params.gig}?plan=basic`); }}
+                  role="button"
+                  selected={plan === "basic"}
+                >Basic</SubNav.Link>
+                <SubNav.Link
+                  onClick={() => { history.push(`/${params.profile}/${params.gig}?plan=standard`); }}
+                  role="button"
+                  selected={plan === "standard"}
+                >Standard</SubNav.Link>
+                <SubNav.Link
+                  onClick={() => { history.push(`/${params.profile}/${params.gig}?plan=premium`); }}
+                  role="button"
+                  selected={plan === "premium"}
+                >Premium</SubNav.Link>
               </SubNav.Links>
             </SubNav>
             {plan === "basic" &&
@@ -95,7 +119,7 @@ const Gigs = () => {
                 <Flex my={4} alignItems="center">
                   <Text fontSize={2}>Paket <Text fontWeight="bold">{gig["basic_title"]}</Text></Text>
                   <Box flexGrow={1}></Box>
-                  <Text fontSize={3}>Rp. {gig["basic_price"]}</Text>
+                  <Text fontSize={3}>Rp. {formatMoney(gig["basic_price"])}</Text>
                 </Flex>
                 <Text as="p" color="gray.5">{gig["basic_description"]}</Text>
                 <Flex alignItems="center" color="gray.7" my={4}>
@@ -109,7 +133,7 @@ const Gigs = () => {
                 <Flex my={4} alignItems="center">
                   <Text fontSize={2}>Paket <Text fontWeight="bold">{gig["standard_title"]}</Text></Text>
                   <Box flexGrow={1}></Box>
-                  <Text fontSize={3}>Rp. {gig["standard_price"]}</Text>
+                  <Text fontSize={3}>Rp. {formatMoney(gig["standard_price"])}</Text>
                 </Flex>
                 <Text as="p" color="gray.5">{gig["standard_description"]}</Text>
                 <Flex alignItems="center" color="gray.7" my={4}>
@@ -123,7 +147,7 @@ const Gigs = () => {
                 <Flex my={4} alignItems="center">
                   <Text fontSize={2}>Paket <Text fontWeight="bold">{gig["premium_title"]}</Text></Text>
                   <Box flexGrow={1}></Box>
-                  <Text fontSize={3}>Rp. {gig["premium_price"]}</Text>
+                  <Text fontSize={3}>Rp. {formatMoney(gig["premium_price"])}</Text>
                 </Flex>
                 <Text as="p" color="gray.5">{gig["premium_description"]}</Text>
                 <Flex alignItems="center" color="gray.7" my={4}>
@@ -132,7 +156,12 @@ const Gigs = () => {
                 </Flex>
               </>
             }
-            <ButtonPrimary width="100%" variant="large">Booking</ButtonPrimary>
+            <ButtonPrimary
+              as="a"
+              display="block"
+              variant="large"
+              href={`tel:${user.telephone}`}
+            >Booking</ButtonPrimary>
           </Box>
         </Box>
       </Flex>
@@ -155,9 +184,11 @@ const Gigs = () => {
           </Dropdown>
         </Text>
       </Flex>
-      <Lists query={{
-        userId: user.id
-      }} />
+      <Box px={2}>
+        <Lists query={{
+          userId: user.id
+        }} />
+      </Box>
     </Box>
   )
 }

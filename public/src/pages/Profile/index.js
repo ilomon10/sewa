@@ -24,7 +24,7 @@ const Profile = () => {
         user = await feathers.users.find({
           query: {
             username: params.profile,
-            $select: ["id", "name", "username", "location", "profile", "createdAt"]
+            $select: ["id", "name", "username", "location", "profile", "createdAt", "telephone"]
           }
         })
         if (user.data.length < 1) return;
@@ -82,11 +82,17 @@ const Profile = () => {
                 </Box>
                 <Text fontWeight="bold" textAlign="right">{user.location}</Text>
               </Flex>
-              <Flex color="gray.5" fontSize={1}>
+              <Flex color="gray.5" fontSize={1} mb={2}>
                 <Box flexGrow={1}>
                   <Text>Member Sejak</Text>
                 </Box>
                 <Text fontWeight="bold">Sep 2017</Text>
+              </Flex>
+              <Flex color="gray.5" fontSize={1} mb={2}>
+                <Box flexGrow={1}>
+                  <Text>Kontak</Text>
+                </Box>
+                <Link fontWeight="bold" href={`tel:${user.telephone}`} muted>{user.telephone}</Link>
               </Flex>
             </Box>
           </Box>

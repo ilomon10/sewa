@@ -32,8 +32,10 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       allowNull: false
     },
-
-
+    telephone: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
   }, {
     hooks: {
       beforeCount(options) {
