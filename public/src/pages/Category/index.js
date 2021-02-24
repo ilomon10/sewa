@@ -1,8 +1,12 @@
-import { Box, Dropdown, Flex, Heading, Text, Pagination } from "@primer/components"
+import { Box, Flex, Heading, Text } from "@primer/components"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+
+import Dropdown from "../../components/Dropdown"
 import { FeathersContext } from "../../components/feathers"
+
 import Lists from "../Lists"
+import Filter from "./Filter"
 
 const Category = () => {
   const params = useParams();
@@ -10,9 +14,10 @@ const Category = () => {
   const [category, setCategory] = useState({
     title: params.category
   });
+  const [filter, setFilter] = useState({});
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    console.log(params.category);
     setLoading(true);
     setCategory({
       title: params.category
@@ -24,8 +29,7 @@ const Category = () => {
             title: params.category,
             $select: ["id", "title"]
           }
-        })
-        console.log(category);
+        });
         if (category.data && category.data.length) {
           setCategory(category.data[0])
         }
@@ -35,44 +39,66 @@ const Category = () => {
       }
     }
     fetch();
-  }, [params.category])
+  }, [params.category]);
+
   return (
     <Box maxWidth={750} mx="auto" px={2}>
       <Box px={2}>
         <Heading mt={4} fontSize={3}>{params.category}</Heading>
         <Text as="p" my={2} fontSize={1} color="gray.5">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</Text>
         <Flex my={3}>
-          <Dropdown>
-            <Dropdown.Button>Harga</Dropdown.Button>
-            <Dropdown.Menu direction="se">
-              <Dropdown.Item>Relevan</Dropdown.Item>
-              <Dropdown.Item>Terbaik</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          <Dropdown>
-            <Dropdown.Button ml={2}>Waktu Kerja</Dropdown.Button>
-            <Dropdown.Menu direction="se">
-              <Dropdown.Item>Relevan</Dropdown.Item>
-              <Dropdown.Item>Terbaik</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          <Filter
+            onChange={(q) => setFilter(q)}
+            fields={{
+              "basic_price": {
+                name: "Harga",
+                options: [{
+                  name: "Ter-Mahal",
+                  value: -1,
+                }, {
+                  name: "Ter-Murah",
+                  value: 1,
+                }]
+              },
+              "basic_worktime": {
+                name: "Waktu Kerja",
+                options: [{
+                  name: "Cepat",
+                  value: -1,
+                }, {
+                  name: "Lama",
+                  value: 1,
+                }]
+              }
+            }}
+          />
         </Flex>
         <Flex px={2} mb={3}>
-          <Text><Text fontWeight="bold">{22.354}</Text> ditemukan</Text>
+          <Text color="gray.5"><Text fontWeight="bold">{22.354}</Text> layanan ditemukan</Text>
           <Box flexGrow={1} />
           <Text>
             <Text>Urutan </Text>
-            <Dropdown>
-              <summary>
-                <Flex alignItems="center">
-                  <Text fontWeight="bold">Relevan</Text>
-                  <Dropdown.Caret />
-                </Flex>
-              </summary>
-              <Dropdown.Menu>
-                <Dropdown.Item>Relevan</Dropdown.Item>
-                <Dropdown.Item>Terbaik</Dropdown.Item>
-              </Dropdown.Menu>
+            <Dropdown defaultValue="Relevan">
+              {({ value, setValue, setOpen }) => (
+                <>
+                  <summary>
+                    <Flex alignItems="center">
+                      <Text fontWeight="bold">{value}</Text>
+                      <Dropdown.Caret />
+                    </Flex>
+                  </summary>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => {
+                      setOpen(open => !open);
+                      setValue("Relevan");
+                    }}>Relevan</Dropdown.Item>
+                    <Dropdown.Item onClick={() => {
+                      setOpen(open => !open);
+                      setValue("Terbaru");
+                    }}>Terbaru</Dropdown.Item>
+                  </Dropdown.Menu>
+                </>
+              )}
             </Dropdown>
           </Text>
         </Flex>
@@ -81,7 +107,8 @@ const Category = () => {
             loading={loading}
             query={{
               categoryId: category.id,
-              $limit: 9
+              $limit: 12,
+              $sort: { ...filter }
             }}
             pagination={true}
           />}

@@ -1,13 +1,21 @@
 const path = require('path');
 const multer = require("multer");
-const logger = require("../logger");
 const { authenticate } = require('@feathersjs/express');
+const crypto = require("crypto");
+const logger = require("../logger");
+
+var sha512 = function (password, salt) {
+  var hash = crypto.createHmac('sha1', salt); /** Hashing algorithm sha512 */
+  hash.update(password);
+  var value = hash.digest('hex');
+  return value;
+};
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, "uploads"),
   filename: (_req, file, cb) => {
-    const originalname = file.originalname.split(".");
-    return cb(null, `${Date.now()}-${originalname[0].replace(/ /g, "_")}.${originalname[1]}`)
+    var ext = path.extname(file.originalname);
+    return cb(null, `${sha512(file.originalname, Date.now().toString())}${ext}`)
   },
 })
 
@@ -23,14 +31,14 @@ const upload = multer({
   },
   limits: {
     fieldSize: 500000,
-    fieldSize: 2e+6
+    // fieldSize: 2e+6
   }
 })
 
 module.exports = () => [
   function allowAnonym(req, res, next) {
     const { method } = req;
-    if (method !== "POST" || method !== "PATH") {
+    if (["POST", "PUT"].indexOf(method) === -1) {
       if (!req.authentication)
         req.authentication = {
           strategy: "anonymous"
@@ -42,7 +50,7 @@ module.exports = () => [
   upload.single("uri"),
   function fileUpload(req, res, next) {
     const { method } = req;
-    if (method === "POST" || method === "PATH") {
+    if (["POST", "PUT"].indexOf(method) !== -1) {
       let file = req.file;
       req.feathers.file = file;
       let body = {

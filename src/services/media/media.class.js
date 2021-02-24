@@ -19,7 +19,9 @@ exports.Media = class Media extends Service {
   async remove(id, params) {
     const file = await this.get(id);
     if (!file) throw new BadRequest(`Media with id ${id} not found`);
-    fs.unlinkSync(file.path);
+    try {
+      fs.unlinkSync(file.path);
+    } catch (e) { }
     return super.remove(id, params);
   }
 };

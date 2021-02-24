@@ -1,8 +1,7 @@
 import { Link as GoTo, useHistory } from "react-router-dom";
-import { Avatar, Box, CounterLabel, Dropdown as PDropdown, Flex, Heading, Link, SelectMenu, Text, TextInput, Truncate } from "@primer/components"
+import { Avatar, Box, CounterLabel, Flex, Heading, Link, SelectMenu, Text, TextInput, Truncate } from "@primer/components"
 import { BellIcon, SearchIcon } from "@primer/styled-octicons";
 import Dropdown from "./Dropdown";
-import { Divider as DropdownDivider } from "./Dropdown.Divider";
 import { useContext, useEffect, useState } from "react";
 import { FeathersContext } from "./feathers";
 
@@ -99,28 +98,37 @@ const Header = () => {
               </Box>
               <Flex px={2} alignItems="center">
                 <Dropdown>
-                  <Flex as="summary" alignItems="center">
-                    <Avatar size={20} src="https://avatars.githubusercontent.com/primer" />
-                    <PDropdown.Caret ml={1} />
-                  </Flex>
-                  <PDropdown.Menu
-                    sx={{
-                      "&:before": {
-                        pointerEvents: "none"
-                      },
-                      "&:after": {
-                        pointerEvents: "none"
-                      }
-                    }}
-                  >
-                    <PDropdown.Item as={GoTo} to="/ilomon10">Profile</PDropdown.Item>
-                    <DropdownDivider />
-                    <PDropdown.Item onClick={() => {
-                      feathers.doLogout();
-                      history.go(0);
-                    }}
-                    >Sign out</PDropdown.Item>
-                  </PDropdown.Menu>
+                  {({ setOpen }) => (
+                    <>
+                      <Flex as="summary" alignItems="center">
+                        <Avatar size={20} src="https://avatars.githubusercontent.com/primer" />
+                        <Dropdown.Caret ml={1} />
+                      </Flex>
+                      <Dropdown.Menu
+                        sx={{
+                          "&:before": {
+                            pointerEvents: "none"
+                          },
+                          "&:after": {
+                            pointerEvents: "none"
+                          }
+                        }}
+                      >
+                        <Dropdown.Item
+                          as={GoTo}
+                          to="/ilomon10"
+                          onClick={() => setOpen(open => !open)}
+                        >Profile</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item
+                          onClick={() => {
+                            feathers.doLogout();
+                            history.go(0);
+                          }}
+                        >Sign out</Dropdown.Item>
+                      </Dropdown.Menu>
+                    </>
+                  )}
                 </Dropdown>
               </Flex>
             </>}

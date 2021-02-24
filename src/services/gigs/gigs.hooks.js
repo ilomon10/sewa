@@ -7,7 +7,7 @@ module.exports = {
   before: {
     all: [],
     find: [sequelizeInclude()],
-    get: [],
+    get: [sequelizeInclude()],
     create: [authenticate('jwt'), sequelizeInclude()],
     update: [authenticate('jwt')],
     patch: [authenticate('jwt'), sequelizeInclude()],

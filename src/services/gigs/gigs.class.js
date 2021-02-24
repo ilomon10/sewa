@@ -1,7 +1,7 @@
 const { Service } = require('feathers-sequelize');
 const logger = require('../../logger');
 const { slugify } = require("../../helper");
-const _unionBy = require("lodash.unionby");
+const { BadRequest } = require('@feathersjs/errors');
 
 exports.Gigs = class Gigs extends Service {
   constructor(options, app) {
@@ -10,6 +10,23 @@ exports.Gigs = class Gigs extends Service {
   }
   async create(data, params) {
     data.slug = slugify(data.title);
+    if (!data.categoryId && data.category) {
+      const category = data.category;
+      delete data.category;
+      const { data: categories } = await this.app.service("categories").find({
+        query: {
+          $limit: 1,
+          title: category
+        }
+      });
+
+      if (!categories) throw new BadRequest(`Category ${category} not registered.`);
+
+      data.categoryId = categories[0].id;
+    }
+
+    logger.info("create:data \n\t", data);
+
     data.userId = params.user.id;
     if (params.route.userId)
       params.query = {
@@ -33,12 +50,22 @@ exports.Gigs = class Gigs extends Service {
       }
 
     params.sequelize = {
-      ...params.sequelize,
       nest: true,
-      raw: false
+      raw: false,
+      ...params.sequelize,
     }
     return super.find(params);
   }
+
+  get(id, params) {
+    params.sequelize = {
+      nest: true,
+      raw: false,
+      ...params.sequelize,
+    }
+    return super.get(id, params);
+  }
+
   async patch(id, data, params) {
     if (params.route.userId)
       params.query = {
@@ -64,8 +91,35 @@ exports.Gigs = class Gigs extends Service {
             }
           });
       }
+    }
+
+    let media = data.media;
+    if (media && media.length) {
+      const nMedia = data.media
+        .filter((m) => (m.id && m.level === "medialink"))
+        .map(m => m.id);
+      if (nMedia && nMedia.length) {
+        for (let i = 0; i < nMedia.length; i++) {
+          const { id: mediaId } = await this.app.service("media").get(nMedia[i]);
+          await this.app.service("gigs-media").create({ "gigs_id": id, "media_id": mediaId })
+        }
+      }
+
+      const dMedia = data.media
+        .filter((m) => (m.id && m.level === "mediaunlink"))
+        .map(m => m.id);
+      if (dMedia && dMedia.length) {
+        await this.app.service("gigs-media")
+          .remove(null, {
+            query: {
+              "gigs_id": id,
+              "media_id": { $in: dMedia }
+            }
+          })
+      }
 
     }
+
     params.sequelize = {
       ...params.sequelize,
       nest: true,

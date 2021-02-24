@@ -1,21 +1,41 @@
-import { Dropdown as PDropdown } from "@primer/components";
+import { Dropdown as PDropdown, Button, ButtonDanger, Details, useDetails } from "@primer/components";
 import { useEffect, useRef, useState } from "react";
+import { Divider } from "./Dropdown.Divider";
 
-const Dropdown = ({ children, open, onToggle, ...props }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Dropdown = ({ children, onChange = () => { }, defaultValue }) => {
+  const { getDetailsProps, open, setOpen } = useDetails({
+    closeOnOutsideClick: true
+  });
+  const [value, setValue] = useState(defaultValue);
+  const { onToggle, ...detailsProps } = getDetailsProps();
+
+  useEffect(() => {
+    onChange(value);
+  }, [value]);
+
   return (
-    <PDropdown
-      {...props}
-      overlay={true}
-      open={isOpen}
+    <Details
+      {...detailsProps}
+      open={open}
       onToggle={(e) => {
-        if (typeof onToggle === "function") onToggle(e);
-        setIsOpen(!isOpen);
+        onToggle(e);
+      }}
+      sx={{
+        display: "inline-block",
+        position: "relative"
       }}
     >
-      {children}
-    </PDropdown>
+      {children({
+        value, setValue,
+        open, setOpen
+      })}
+    </Details>
   )
 }
+
+Dropdown.Caret = PDropdown.Caret;
+Dropdown.Menu = PDropdown.Menu;
+Dropdown.Item = PDropdown.Item;
+Dropdown.Divider = Divider;
 
 export default Dropdown;

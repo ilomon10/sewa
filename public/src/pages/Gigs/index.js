@@ -1,11 +1,12 @@
 import { useContext, useEffect, useMemo, useState } from "react";
-import { Link as GoTo, useHistory, useLocation, useParams } from "react-router-dom";
-import { Box, ButtonPrimary, Dropdown, Flex, Heading, Link, SubNav, Text } from "@primer/components";
-import { StopwatchIcon } from "@primer/styled-octicons";
+import { Link as GoTo, NavLink as NavGoTo, useHistory, useLocation, useParams } from "react-router-dom";
+import { Box, Breadcrumb, Button, ButtonPrimary, Dropdown, Flex, Heading, Link, SubNav, Text, Dialog } from "@primer/components";
+import { StopwatchIcon, PencilIcon } from "@primer/styled-octicons";
 import AspectRatio from "../../components/AspectRatio";
 import { FeathersContext } from "../../components/feathers";
 import { formatMoney } from "../../components/helper";
 import Lists from "../Lists";
+import EditGigs from "./EditGigs";
 
 const Gigs = () => {
   const params = useParams();
@@ -16,12 +17,14 @@ const Gigs = () => {
     const search = new URLSearchParams(location.search);
     return search.get("plan") || "basic";
   }, [location.search]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [user, setUser] = useState({
     username: params.profile
   });
   const [gig, setGig] = useState({
     slug: params.gig,
-    category: {}
+    category: {},
+    media: []
   })
   useEffect(() => {
     const fetch = async () => {
@@ -46,10 +49,15 @@ const Gigs = () => {
         gig = await feathers.gigs.find({
           query: {
             slug: params.gig,
-            $include: {
+            $include: [{
               model: "categories",
               attributes: ["id", "title"]
-            }
+            }, {
+              model: "media",
+              attributes: ["id", "path"],
+              as: "media",
+              through: { attributes: [] }
+            }]
           },
         })
         console.log(gig);
@@ -64,30 +72,61 @@ const Gigs = () => {
     <Box px={2} pt={4} maxWidth={750} mx="auto">
       <Flex mb={4}>
         <Box width="40%" flexShrink={0} px={2}>
-          <Box>
-            <AspectRatio ratio="1:1">
-              <img width="100%" src="https://via.placeholder.com/250x250" />
-            </AspectRatio>
-          </Box>
-          <Flex py={2} mx={-1}>
-            <Box px={1} width={`${100 / 3}%`}>
+          {gig.media.length > 0 && (<>
+            <Box>
               <AspectRatio ratio="1:1">
-                <img width="100%" src="https://via.placeholder.com/125x125" />
+                <Box
+                  as="img"
+                  width="100%"
+                  height="100%"
+                  src={`${feathers.host}${gig.media[0]["path"]}`}
+                  sx={{ objectFit: "cover" }}
+                />
               </AspectRatio>
             </Box>
-            <Box px={1} width={`${100 / 3}%`}>
-              <AspectRatio ratio="1:1">
-                <img width="100%" src="https://via.placeholder.com/125x125" />
-              </AspectRatio>
-            </Box>
-            <Box px={1} width={`${100 / 3}%`}>
-              <AspectRatio ratio="1:1">
-                <img width="100%" src="https://via.placeholder.com/125x125" />
-              </AspectRatio>
-            </Box>
-          </Flex>
+            <Flex py={2} mx={-1}>
+              {gig.media.map(({ id, path }) => (
+                <Box key={id} px={1} width={`${100 / 3}%`}>
+                  <AspectRatio ratio="1:1">
+                    <Box
+                      as="img"
+                      width="100%"
+                      height="100%"
+                      src={`${feathers.host}${path}`}
+                      sx={{
+                        objectFit: "cover"
+                      }}
+                    />
+                  </AspectRatio>
+                </Box>
+              ))}
+            </Flex>
+          </>)}
         </Box>
         <Box px={2}>
+          <Flex alignItems="center">
+            <Box>
+              <Breadcrumb>
+                <Breadcrumb.Item as={NavGoTo} exact to={`/`}>Sewa</Breadcrumb.Item>
+                <Breadcrumb.Item as={NavGoTo} to={`/${gig.category.title}`}>{gig.category.title}</Breadcrumb.Item>
+              </Breadcrumb>
+            </Box>
+            <Box flexGrow={1} />
+            <Box>
+              {(feathers.account && feathers.account.username === user.username) &&
+                <>
+                  <Button variant="small" onClick={() => setIsDialogOpen(true)}>
+                    <Flex alignItems="center">
+                      <PencilIcon size={12} />
+                      <Text ml={1}>Edit</Text>
+                    </Flex>
+                  </Button>
+                  <Dialog isOpen={isDialogOpen} onDismiss={() => setIsDialogOpen(false)}>
+                    <EditGigs data={gig} onAccept={() => history.go()} onDismiss={() => setIsDialogOpen(false)} />
+                  </Dialog>
+                </>}
+            </Box>
+          </Flex>
           <Heading fontSize={4} mb={2}>{gig.title}</Heading>
           <Text color="gray.5">
             <Link as={GoTo} to={`/${params.profile}`} fontWeight="bold">{params.profile}</Link>

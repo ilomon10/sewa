@@ -21,10 +21,20 @@ const Item = ({
         }}
       >
         <Box height={75} width={75} flexShrink={0} backgroundColor="gray.2">
-          {!loading && <img style={{ display: "block" }} alt={"Alt text"} src={image} />}
+          {!loading &&
+            <img
+              height="100%"
+              width="100%"
+              style={{
+                display: "block", objectFit: "cover", overflow: "hidden"
+              }}
+              alt={`${title}`}
+              src={image || "https://via.placeholder.com/75?text=no-image"}
+            />
+          }
         </Box>
         <Flex px={2} alignItems="center">
-          <Link as={GoTo} to={url} muted>
+          <Link as={GoTo} to={url || "#"} muted>
             <Heading
               as="h3"
               fontSize={1}

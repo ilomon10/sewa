@@ -1,14 +1,15 @@
 import { Avatar, Box, Heading, Flex, Text, Link, Grid, Button } from "@primer/components"
 import { PlusIcon } from "@primer/styled-octicons";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { FeathersContext } from "../../components/feathers";
-import Item from "../../components/Item"
+import Lists from "../Lists";
 import CreateGigs from "./CreateGigs";
 
 
 const Profile = () => {
   const params = useParams();
+  const history = useHistory();
   const feathers = useContext(FeathersContext);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [user, setUser] = useState({
@@ -16,7 +17,6 @@ const Profile = () => {
     location: "",
     profile: null,
   });
-  const [gigs, setGigs] = useState([]);
   useEffect(() => {
     const fetch = async () => {
       let user = {};
@@ -38,27 +38,6 @@ const Profile = () => {
       }
 
       console.log(user);
-      let gigs = [];
-
-      try {
-        gigs = await feathers.gigs.find({
-          query: {
-            userId: user.id,
-            $select: ["id", "slug", "title", "basic_price", "updatedAt"],
-            $include: {
-              model: "users",
-              attributes: ["id", "username"]
-            }
-          }
-        })
-        gigs = gigs.data.map(gig => {
-          const url = `/${gig["user"]["username"]}/${gig.slug}`;
-          return { ...gig, url }
-        })
-        setGigs(gigs);
-      } catch (e) {
-        console.error(e);
-      }
     }
     fetch();
   }, [params]);
@@ -120,16 +99,24 @@ const Profile = () => {
                     <Text ml={1}>Buat layanan baru</Text>
                   </Flex>
                 </Button>
-                <CreateGigs isOpen={isDialogOpen} onDismiss={() => setIsDialogOpen(false)} />
+                <CreateGigs
+                  isOpen={isDialogOpen}
+                  onDismiss={() => setIsDialogOpen(false)}
+                  onAccept={({ slug }) => {
+                    history.push(`/${params.profile}/${slug}`);
+                  }}
+                />
               </>}
           </Flex>
-          <Grid gridTemplateColumns="repeat(2, auto)">
-            {gigs.map(({ id, title, basic_price, url }) => (
-              <Box key={id} mb={3} px={2}>
-                <Item title={title} price={basic_price} url={url} />
-              </Box>
-            ))}
-          </Grid>
+          <Box px={2} mb={4}>
+            <Lists
+              col={2}
+              pagination
+              query={{
+                userId: user.id
+              }}
+            />
+          </Box>
         </Box>
       </Flex>
     </Box>
