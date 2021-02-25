@@ -1,15 +1,59 @@
-import { Box, Dropdown, Flex, Grid, Heading, Pagination, Text } from "@primer/components";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Box, Dropdown, Flex, Heading, Pagination, Text } from "@primer/components";
 import Item from "../components/Item";
+import Lists from "./Lists";
+import Filter from "./Category/Filter";
+import { formatMoney } from "../components/helper";
 
 const Search = () => {
   const location = useLocation();
+  const [filter, setFilter] = useState({});
   const query = new URLSearchParams(location.search).get("query")
   return (
     <Box px={2} pt={4} maxWidth={750} mx="auto">
       <Box px={2} mb={4}>
         <Heading>Hasil pencarian "{query}"</Heading>
       </Box>
+      <Flex my={3}>
+        <Filter
+          onChange={(q) => setFilter(q)}
+          fields={[{
+            key: "basic_price",
+            title: "Harga",
+            type: "range",
+            options: {
+              from: {
+                key: "$gte",
+                placeholder: "Mulai",
+                type: "number",
+                parse: (val) => {
+                  return `Rp. ${formatMoney(val)}`;
+                }
+              },
+              to: {
+                key: "$lte",
+                placeholder: "Sampai",
+                type: "number",
+                parse: (val) => {
+                  return `Rp. ${formatMoney(val)}`;
+                }
+              }
+            },
+          }, {
+            key: "basic_worktime",
+            title: "Waktu Kerja",
+            type: "select",
+            options: [{
+              name: "Cepat",
+              value: -1,
+            }, {
+              name: "Lama",
+              value: 1,
+            }],
+          }]}
+        />
+      </Flex>
       <Flex px={2} mb={3}>
         <Text><Text fontWeight="bold">{22.354}</Text> ditemukan</Text>
         <Box flexGrow={1} />
@@ -29,18 +73,16 @@ const Search = () => {
           </Dropdown>
         </Text>
       </Flex>
-      <Grid gridTemplateColumns="repeat(3, auto)">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11 ,12, 13, 14, 15, 16, 17, 18].map((v) => (
-          <Box key={v} mb={3} px={2}>
-            <Item />
-          </Box>
-        ))
-        }
-      </Grid>
-      <Pagination
-        pageCount={25}
-        currentPage={3}
-      />
+      <Box>
+        <Lists
+          query={{
+            $limit: 12,
+            title: { $like: `%${query}%` },
+            ...filter
+          }}
+          pagination={true}
+        />
+      </Box>
     </Box>
   )
 }

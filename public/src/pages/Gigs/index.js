@@ -223,10 +223,19 @@ const Gigs = () => {
           </Dropdown>
         </Text>
       </Flex>
-      <Box px={2}>
+      <Box px={2} mb={4}>
         <Lists query={{
-          userId: user.id
+          userId: user.id,
+          $limit: 6
         }} />
+      </Box>
+      <Heading mb={4} fontSize={3}>Kategori <Link as={GoTo} to={`/${gig.category.title}`}>{gig.category.title}</Link></Heading>
+      <Box px={2} mb={4}>
+        {!!gig.category.id &&
+          <Lists query={{
+            categoryId: gig.category.id,
+            $limit: 3
+          }} />}
       </Box>
     </Box>
   )

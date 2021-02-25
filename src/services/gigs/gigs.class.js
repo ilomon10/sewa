@@ -25,8 +25,6 @@ exports.Gigs = class Gigs extends Service {
       data.categoryId = categories[0].id;
     }
 
-    logger.info("create:data \n\t", data);
-
     data.userId = params.user.id;
     if (params.route.userId)
       params.query = {

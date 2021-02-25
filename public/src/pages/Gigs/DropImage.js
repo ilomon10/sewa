@@ -19,9 +19,9 @@ const DropImage = ({
   const feathers = useContext(FeathersContext);
   const formData = useMemo(() => new FormData(), []);
   const [loading, setLoading] = useState(false);
-
   const upload = _debounce((files) => {
     let file = files[0];
+    if (!file) return;
     formData.set("uri", file, file.name);
     formData.set("description", "gambar");
     feathers.media.create(formData, {
@@ -34,17 +34,19 @@ const DropImage = ({
     });
   }, 1000);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     disabled: disabled || (file.id ? true : false),
-    onDrop: (files) => {
+    onDropAccepted: (files) => {
       setLoading(true);
       upload(files);
+    },
+    onDropRejected: (files) => {
+      console.log("file", files);
     },
     accept: "image/jpeg, image/png, image/gif",
     maxSize: 5e+5,
     multiple: false,
   });
-
 
   return (
     <Flex
@@ -70,8 +72,9 @@ const DropImage = ({
       }}
     >
       <input {...getInputProps()} />
+      {fileRejections.length > 0 && <Text textAlign="center">{fileRejections[0].errors[0].code}</Text>}
       {loading && <Text textAlign="center">Loading...</Text>}
-      {(!loading && !file.url) &&
+      {(fileRejections.length === 0 && !loading && !file.url) &&
         <Box color={disabled ? "gray.1" : "gray.5"}>
           <ImageIcon size={24} />
         </Box>}

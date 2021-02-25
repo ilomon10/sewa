@@ -72,12 +72,12 @@ const Header = () => {
           }
           {(feathers.account !== null) &&
             <>
-              <Box px={2}>
+              <Box px={2} sx={{ position: "relative" }}>
                 <SelectMenu>
                   <Flex as="summary" alignItems="center">
                     <BellIcon />
                   </Flex>
-                  <SelectMenu.Modal align="right">
+                  <SelectMenu.Modal align='right'>
                     <SelectMenu.Header>Notifikasi</SelectMenu.Header>
                     <SelectMenu.List>
                       <SelectMenu.Item as="button">
@@ -101,7 +101,15 @@ const Header = () => {
                   {({ setOpen }) => (
                     <>
                       <Flex as="summary" alignItems="center">
-                        <Avatar size={20} src="https://avatars.githubusercontent.com/primer" />
+                        <Avatar
+                          size={20}
+                          sx={{ objectFit: "cover" }}
+                          src={
+                            feathers.account.avatar
+                              ? `${feathers.host}${feathers.account.avatar.path}`
+                              : `https://avatars.dicebear.com/4.5/api/male/${feathers.account.username}.svg?m=5&b=%23e3e3e3`
+                          }
+                        />
                         <Dropdown.Caret ml={1} />
                       </Flex>
                       <Dropdown.Menu

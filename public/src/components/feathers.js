@@ -47,6 +47,11 @@ class Feathers {
   async doReAuthenticate(force) {
     const account = await this.socket.reAuthenticate(force);
     this.account = account.user;
+    const avatar = await this.media.get(this.account.avatarId, {
+      query: { $select: ["id", "path"] }
+    });
+    if (avatar) this.account.avatar = avatar;
+    console.log(this.account);
     return account;
   }
   doGet(name) {

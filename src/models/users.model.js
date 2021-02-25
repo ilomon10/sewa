@@ -49,8 +49,12 @@ module.exports = function (app) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
 
-    const { gigs } = models;
+    const { gigs, media } = models;
 
+    users.belongsTo(media, {
+      as: "avatar",
+      constraints: false
+    });
     users.hasMany(gigs);
   };
 

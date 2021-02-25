@@ -1,11 +1,12 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Box, Flex, Text, Dropdown, Grid, Pagination } from "@primer/components";
 import Item from "../../components/Item";
 import { FeathersContext } from "../../components/feathers";
+import { usePrevious } from "../../components/helper";
 
-const Lists = ({ query, pagination = false, col = 3 }) => {
+const Lists = ({ query, onChange = () => { }, pagination = false, col = 3 }) => {
   const feathers = useContext(FeathersContext);
-  const [list, setList] = useState([{}, {}, {}, {}, {}, {}, {}, {}, {}]);
+  const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paging, setPaging] = useState({
     total: 0,
@@ -14,21 +15,24 @@ const Lists = ({ query, pagination = false, col = 3 }) => {
     pageCount: 0,
     currentPage: 0
   });
+
+  const q = usePrevious(query);
+
   const fetch = useCallback(async (paging) => {
     setLoading(true);
     try {
-      let ids = await feathers.gigs.find({
+      let { data: ids, total, limit, skip } = await feathers.gigs.find({
         query: {
           $skip: paging.skip,
           $select: ["id"],
           ...query,
         }
       });
-      ids = ids.data.map(gig => gig.id);
-      const { data, total, limit, skip } = await feathers.gigs.find({
+      ids = ids.map(gig => gig.id);
+      let { data } = await feathers.gigs.find({
         query: {
           id: { $in: ids },
-          $select: ["id", "slug", "basic_price", "title"],
+          $select: ["id", "slug", "basic_price", "title", "basic_worktime"],
           $include: [{
             model: "users",
             attributes: ["id", "username"]
@@ -39,6 +43,16 @@ const Lists = ({ query, pagination = false, col = 3 }) => {
           }],
         }
       });
+
+      data.sort((a, b) => {
+        var x = a["basic_price"]; var y = b["basic_price"];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+      });
+      if (query.$sort
+        && query.$sort.basic_price
+        && query.$sort.basic_price < 0) {
+        data.reverse();
+      }
 
       await setList(data.map(gig => ({
         ...gig,
@@ -62,7 +76,14 @@ const Lists = ({ query, pagination = false, col = 3 }) => {
   }, [query]);
 
   useEffect(() => {
+    onChange(list, paging, query);
+  }, [query, paging, list]);
+
+  useEffect(() => {
+    console.log(query, q);
+    if (JSON.stringify(query) === JSON.stringify(q)) return;
     fetch(paging);
+    console.log("fetch");
   }, [query]);
 
   return (
@@ -78,6 +99,10 @@ const Lists = ({ query, pagination = false, col = 3 }) => {
               image={media}
             />
           </Box>
+        ))}
+
+        {(loading && list) && new Array(query.$limit - list.length).fill(0).map((_, idx) => (
+          <Box key={idx} mb={3} px={2}><Item loading={true} /></Box>
         ))}
       </Grid>
       {pagination && paging.total > 0 &&
