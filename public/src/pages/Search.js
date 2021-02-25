@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Box, Dropdown, Flex, Heading, Pagination, Text } from "@primer/components";
-import Item from "../components/Item";
+import { Box, Flex, Heading, Pagination, Text } from "@primer/components";
+import Dropdown from "../components/Dropdown";
 import Lists from "./Lists";
 import Filter from "./Category/Filter";
 import { formatMoney } from "../components/helper";
@@ -9,13 +9,14 @@ import { formatMoney } from "../components/helper";
 const Search = () => {
   const location = useLocation();
   const [filter, setFilter] = useState({});
+  const [totalGig, setTotalGig] = useState(0);
   const query = new URLSearchParams(location.search).get("query")
   return (
     <Box px={2} pt={4} maxWidth={750} mx="auto">
       <Box px={2} mb={4}>
         <Heading>Hasil pencarian "{query}"</Heading>
       </Box>
-      <Flex my={3}>
+      <Flex px={2} my={3}>
         <Filter
           onChange={(q) => setFilter(q)}
           fields={[{
@@ -55,26 +56,39 @@ const Search = () => {
         />
       </Flex>
       <Flex px={2} mb={3}>
-        <Text><Text fontWeight="bold">{22.354}</Text> ditemukan</Text>
+        <Text color="gray.5"><Text fontWeight="bold">{totalGig}</Text> layanan ditemukan</Text>
         <Box flexGrow={1} />
         <Text>
           <Text>Urutan </Text>
-          <Dropdown>
-            <summary>
-              <Flex alignItems="center">
-                <Text fontWeight="bold">Relevan</Text>
-                <Dropdown.Caret />
-              </Flex>
-            </summary>
-            <Dropdown.Menu>
-              <Dropdown.Item>Relevan</Dropdown.Item>
-              <Dropdown.Item>Terbaik</Dropdown.Item>
-            </Dropdown.Menu>
+          <Dropdown defaultValue="Relevan">
+            {({ value, setValue, setOpen }) => (
+              <>
+                <summary>
+                  <Flex alignItems="center">
+                    <Text fontWeight="bold">{value}</Text>
+                    <Dropdown.Caret />
+                  </Flex>
+                </summary>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={() => {
+                    setOpen(open => !open);
+                    setValue("Relevan");
+                  }}>Relevan</Dropdown.Item>
+                  <Dropdown.Item onClick={() => {
+                    setOpen(open => !open);
+                    setValue("Terbaru");
+                  }}>Terbaru</Dropdown.Item>
+                </Dropdown.Menu>
+              </>
+            )}
           </Dropdown>
         </Text>
       </Flex>
-      <Box>
+      <Box px={2}>
         <Lists
+          onChange={(_, { total }) => {
+            setTotalGig(total);
+          }}
           query={{
             $limit: 12,
             title: { $like: `%${query}%` },
