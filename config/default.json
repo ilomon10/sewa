@@ -29,5 +29,8 @@
       "passwordField": "password"
     }
   },
-  "postgres": "postgres://postgres:ilomon0123@localhost:5432/sewa"
+  "postgres": {
+    "connection": "postgres://postgres:ilomon0123@localhost:5432/sewa",
+    "ssl": false
+  }
 }

@@ -1,4 +1,11 @@
 {
-  "host": "sewa-app.feathersjs.com",
-  "port": "PORT"
+  "host": "HOST",
+  "port": "PORT",
+  "postgres": {
+    "connection": "DATABASE_URL",
+    "ssl": {
+      "required": true,
+      "rejectUnauthorized": false
+    }
+  }
 }
