@@ -1,5 +1,4 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { keep } = require("feathers-hooks-common");
 
 const sequelizeInclude = require('../../hooks/sequelize-include');
 

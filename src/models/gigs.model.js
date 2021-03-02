@@ -88,14 +88,14 @@ module.exports = function (app) {
     gigs.belongsTo(users);
     gigs.belongsTo(categories);
     gigs.belongsToMany(tags, {
-      through: "gigs_tags",
-      as: "tags",
-      foreignKey: "gigs_id"
+      through: 'gigs_tags',
+      as: 'tags',
+      foreignKey: 'gigs_id'
     });
     gigs.belongsToMany(media, {
-      through: "gigs_media",
-      as: "media",
-      foreignKey: "gigs_id"
+      through: 'gigs_media',
+      as: 'media',
+      foreignKey: 'gigs_id'
     });
   };
 

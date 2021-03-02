@@ -1,5 +1,4 @@
 const { Service } = require('feathers-sequelize');
-const logger = require('../../logger');
 
 exports.Tags = class Tags extends Service {
   async create(data, params) {
@@ -7,7 +6,7 @@ exports.Tags = class Tags extends Service {
       try {
         return await Promise.all(data.map(current => this.create(current, params)));
       } catch (err) {
-        throw err;
+        throw new Error(err);
       }
     }
     return super.create(data, params);

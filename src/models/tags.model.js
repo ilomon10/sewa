@@ -27,9 +27,9 @@ module.exports = function (app) {
     const { gigs } = models;
     
     tags.belongsToMany(gigs, {
-      through: "gigs_tags",
-      as: "gigs",
-      foreignKey: "tags_id"
+      through: 'gigs_tags',
+      as: 'gigs',
+      foreignKey: 'tags_id'
     });
   };
 

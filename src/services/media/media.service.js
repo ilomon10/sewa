@@ -1,7 +1,6 @@
 // Initializes the `media` service on path `/media`
 const { Media } = require('./media.class');
 const createModel = require('../../models/media.model');
-const logger = require("../../logger");
 const hooks = require('./media.hooks');
 
 

@@ -52,7 +52,7 @@ module.exports = function (app) {
     const { gigs, media } = models;
 
     users.belongsTo(media, {
-      as: "avatar",
+      as: 'avatar',
       constraints: false
     });
     users.hasMany(gigs);

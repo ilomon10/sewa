@@ -34,9 +34,9 @@ module.exports = function (app) {
 
     media.belongsTo(users);
     media.belongsToMany(gigs, {
-      through: "gigs_media",
-      as: "gigs",
-      foreignKey: "media_id"
+      through: 'gigs_media',
+      as: 'gigs',
+      foreignKey: 'media_id'
     });
   };
 

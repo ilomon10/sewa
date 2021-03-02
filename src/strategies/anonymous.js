@@ -4,7 +4,7 @@ class AnonymousStrategy extends AuthenticationBaseStrategy {
   async authenticate() {
     return {
       anonymous: true
-    }
+    };
   }
 }
 

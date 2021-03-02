@@ -6,7 +6,7 @@ exports.Users = class Users extends Service {
       ...params.sequelize,
       nest: true,
       raw: false,
-    }
+    };
     return super.get(id, params);
   }
   find(params) {
@@ -14,7 +14,7 @@ exports.Users = class Users extends Service {
       ...params.sequelize,
       nest: true,
       raw: false,
-    }
+    };
     return super.find(params);
   }
 };

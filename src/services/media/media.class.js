@@ -1,6 +1,5 @@
 const { Service } = require('feathers-sequelize');
-const logger = require('../../logger');
-const fs = require("fs");
+const fs = require('fs');
 const { BadRequest } = require('@feathersjs/errors');
 
 exports.Media = class Media extends Service {
@@ -9,7 +8,7 @@ exports.Media = class Media extends Service {
       try {
         return await Promise.all(data.map(current => this.create(current, params)));
       } catch (err) {
-        throw err;
+        throw new Error(err);
       }
     }
     data.userId = params.user.id;
@@ -19,9 +18,7 @@ exports.Media = class Media extends Service {
   async remove(id, params) {
     const file = await this.get(id);
     if (!file) throw new BadRequest(`Media with id ${id} not found`);
-    try {
-      fs.unlinkSync(file.path);
-    } catch (e) { }
+    fs.unlink(file.path);
     return super.remove(id, params);
   }
 };
